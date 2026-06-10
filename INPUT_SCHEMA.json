@@ -1,6 +1,6 @@
 {
-  "title": "Instagram Profile Scraper — Extract Public Posts & Analytics",
-  "description": "Scrape public Instagram profiles, bios, follower stats, and posts. Export structured JSON for influencer research, brand monitoring, and content strategy.",
+  "title": "Instagram Profile Scraper - Bio, Followers & Stats",
+  "description": "Scrape public Instagram profiles: bio, follower/following counts, post count, verification, and business info. Fast and reliable for influencer research, brand monitoring, and lead generation. Optional best-effort post scraping (beta).",
   "type": "object",
   "schemaVersion": 1,
   "required": ["usernames"],
@@ -13,12 +13,12 @@
       "prefill": ["natgeo"]
     },
     "maxPostsPerProfile": {
-      "title": "Max Posts Per Profile",
-      "description": "Maximum number of posts to scrape per profile. Set to 0 to scrape profile data only.",
+      "title": "Max Posts Per Profile (beta)",
+      "description": "Number of recent posts to scrape per profile. Profile data is always scraped reliably; post scraping is best-effort and may be limited by Instagram's logged-out restrictions. Leave at 0 for fast, reliable profile-only scraping.",
       "type": "integer",
       "minimum": 0,
       "maximum": 500,
-      "default": 12,
+      "default": 0,
       "editor": "number"
     },
     "includeReels": {

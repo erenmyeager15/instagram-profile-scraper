@@ -1,8 +1,8 @@
 {
   "actorSpecification": 1,
   "name": "instagram-profile-scraper",
-  "title": "Instagram Profile Scraper - Profiles, Posts & Analytics",
-  "description": "Scrape public Instagram profiles, bios, follower stats, and posts. Export structured JSON for influencer research, brand monitoring, and content strategy.",
+  "title": "Instagram Profile Scraper - Bio, Followers & Stats",
+  "description": "Scrape public Instagram profiles: full name, bio, follower and following counts, post count, verification, business category, and external link. Fast and reliable. Optional best-effort post scraping (beta).",
   "version": "1.0",
   "dockerfile": "Dockerfile",
   "input": "../INPUT_SCHEMA.json",
