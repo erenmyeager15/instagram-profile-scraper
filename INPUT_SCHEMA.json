@@ -10,6 +10,7 @@
       "description": "Enter Instagram usernames (without @) or full profile URLs. Multiple entries supported.",
       "type": "array",
       "editor": "stringList",
+      "default": ["natgeo"],
       "prefill": ["natgeo"]
     },
     "maxPostsPerProfile": {
