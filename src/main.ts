@@ -34,7 +34,7 @@ Actor.main(async () => {
         proxyConfiguration,
         maxConcurrency: 3,
         minConcurrency: 1,
-        requestHandlerTimeoutSecs: 120,
+        requestHandlerTimeoutSecs: 300,
         retryOnBlocked: true,
         maxRequestRetries: 3,
         sessionPoolOptions: {
@@ -46,6 +46,9 @@ Actor.main(async () => {
         preNavigationHooks: [
             async ({ page }) => {
                 await page.setViewportSize({ width: 1366, height: 768 });
+                // Fast-fail locator actions: missing elements should not block for the
+                // 30s default, which otherwise stacks up and times out the handler.
+                page.setDefaultTimeout(8000);
             },
         ],
         requestHandler: async (context) => {

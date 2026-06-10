@@ -264,14 +264,14 @@ async function extractSinglePost(
         ];
 
         for (const selector of likeSelectors) {
-            const likeText = await page.locator(selector).first().textContent();
+            const likeText = await page.locator(selector).first().textContent().catch(() => null);
             if (likeText && /\d/.test(likeText)) {
                 post.likesCount = parseCount(likeText);
                 break;
             }
         }
 
-        const commentText = await page.locator('ul ul li span').first().textContent();
+        const commentText = await page.locator('ul ul li span').first().textContent().catch(() => null);
         if (commentText && /\d/.test(commentText)) {
             post.commentsCount = parseCount(commentText);
         }
