@@ -46,19 +46,5 @@
         "proxyUrls": []
       }
     }
-  },
-  "groups": [
-    {
-      "title": "Target Profiles",
-      "fields": ["usernames", "maxPostsPerProfile"]
-    },
-    {
-      "title": "Content Options",
-      "fields": ["includeReels", "includeCarousels"]
-    },
-    {
-      "title": "Network",
-      "fields": ["proxyConfiguration"]
-    }
-  ]
+  }
 }
