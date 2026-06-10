@@ -1,0 +1,61 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "type": "object",
+    "properties": {
+      "username": { "type": "string", "title": "Username", "example": "natgeo" },
+      "fullName": { "type": "string", "title": "Full Name", "example": "National Geographic" },
+      "bio": { "type": "string", "title": "Bio", "example": "Inspiring people to care about the planet." },
+      "followers": { "type": "integer", "title": "Followers", "example": 269000000 },
+      "following": { "type": "integer", "title": "Following", "example": 134 },
+      "postsCount": { "type": "integer", "title": "Posts", "example": 30215 },
+      "isVerified": { "type": "boolean", "title": "Verified", "example": true },
+      "isBusinessAccount": { "type": "boolean", "title": "Business", "example": true },
+      "businessCategory": { "type": "string", "title": "Category", "example": "Media/News Company" },
+      "externalLink": { "type": "string", "title": "External Link", "example": "https://l.instagram.com/..." },
+      "profileImageUrl": { "type": "string", "title": "Profile Image", "example": "https://..." },
+      "profileUrl": { "type": "string", "title": "Profile URL", "example": "https://www.instagram.com/natgeo/" },
+      "isPrivate": { "type": "boolean", "title": "Private", "example": false },
+      "scrapedAt": { "type": "string", "title": "Scraped At", "example": "2026-06-10T12:00:00.000Z" }
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Instagram Profiles",
+      "description": "Public Instagram profile data.",
+      "transformation": {
+        "fields": [
+          "username",
+          "fullName",
+          "followers",
+          "following",
+          "postsCount",
+          "isVerified",
+          "isBusinessAccount",
+          "businessCategory",
+          "externalLink",
+          "bio",
+          "profileUrl",
+          "scrapedAt"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "username": { "label": "Username", "format": "text" },
+          "fullName": { "label": "Full Name", "format": "text" },
+          "followers": { "label": "Followers", "format": "number" },
+          "following": { "label": "Following", "format": "number" },
+          "postsCount": { "label": "Posts", "format": "number" },
+          "isVerified": { "label": "Verified", "format": "boolean" },
+          "isBusinessAccount": { "label": "Business", "format": "boolean" },
+          "businessCategory": { "label": "Category", "format": "text" },
+          "externalLink": { "label": "Link", "format": "link" },
+          "bio": { "label": "Bio", "format": "text" },
+          "profileUrl": { "label": "Profile", "format": "link" },
+          "scrapedAt": { "label": "Scraped At", "format": "date" }
+        }
+      }
+    }
+  }
+}

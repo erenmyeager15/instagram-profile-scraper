@@ -17,7 +17,7 @@ Actor.main(async () => {
         throw new Error('At least one username or profile URL must be provided.');
     }
 
-    const profileDataset = await Actor.openDataset('profiles');
+    const profileDataset = await Actor.openDataset();
     const postDataset = await Actor.openDataset('posts');
 
     const proxyConfiguration = proxyConfig?.useApifyProxy

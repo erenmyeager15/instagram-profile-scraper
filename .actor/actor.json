@@ -26,5 +26,8 @@
   "defaultRunOptions": {
     "memoryMbytes": 4096,
     "timeoutSecs": 43200
+  },
+  "storages": {
+    "dataset": "./dataset_schema.json"
   }
 }
