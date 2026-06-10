@@ -1,0 +1,64 @@
+{
+  "title": "Instagram Profile Scraper — Extract Public Posts & Analytics",
+  "description": "Scrape public Instagram profiles, bios, follower stats, and posts. Export structured JSON for influencer research, brand monitoring, and content strategy.",
+  "type": "object",
+  "schemaVersion": 1,
+  "required": ["usernames"],
+  "properties": {
+    "usernames": {
+      "title": "Instagram Usernames or Profile URLs",
+      "description": "Enter Instagram usernames (without @) or full profile URLs. Multiple entries supported.",
+      "type": "array",
+      "editor": "stringList",
+      "prefill": ["natgeo"]
+    },
+    "maxPostsPerProfile": {
+      "title": "Max Posts Per Profile",
+      "description": "Maximum number of posts to scrape per profile. Set to 0 to scrape profile data only.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500,
+      "default": 12,
+      "editor": "number"
+    },
+    "includeReels": {
+      "title": "Include Reels",
+      "description": "Whether to include Instagram Reels in the scraped posts.",
+      "type": "boolean",
+      "default": true,
+      "editor": "checkbox"
+    },
+    "includeCarousels": {
+      "title": "Include Carousels",
+      "description": "Whether to include carousel (multi-image/video) posts in the scraped posts.",
+      "type": "boolean",
+      "default": true,
+      "editor": "checkbox"
+    },
+    "proxyConfiguration": {
+      "title": "Proxy Configuration",
+      "description": "Configure proxies for scraping. Residential proxies recommended for Instagram.",
+      "type": "object",
+      "editor": "proxy",
+      "default": {
+        "useApifyProxy": true,
+        "apifyProxyGroups": ["RESIDENTIAL"],
+        "proxyUrls": []
+      }
+    }
+  },
+  "groups": [
+    {
+      "title": "Target Profiles",
+      "fields": ["usernames", "maxPostsPerProfile"]
+    },
+    {
+      "title": "Content Options",
+      "fields": ["includeReels", "includeCarousels"]
+    },
+    {
+      "title": "Network",
+      "fields": ["proxyConfiguration"]
+    }
+  ]
+}

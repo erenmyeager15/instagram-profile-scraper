@@ -1,0 +1,25 @@
+{
+  "name": "instagram-profile-scraper",
+  "version": "1.0.0",
+  "description": "Apify Actor that scrapes public Instagram profiles and posts",
+  "type": "module",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "node dist/main.js",
+    "build": "tsc",
+    "dev": "tsx src/main.ts"
+  },
+  "dependencies": {
+    "apify": "^3.1.0",
+    "crawlee": "^3.9.0",
+    "playwright": "^1.44.0"
+  },
+  "devDependencies": {
+    "@apify/tsconfig": "^0.1.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0"
+  },
+  "apify": {
+    "actorInterface": "apify/actor-node-playwright-chrome:20"
+  }
+}

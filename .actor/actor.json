@@ -1,0 +1,30 @@
+{
+  "actorSpecification": 1,
+  "name": "instagram-profile-scraper",
+  "title": "Instagram Profile Scraper - Profiles, Posts & Analytics",
+  "description": "Scrape public Instagram profiles, bios, follower stats, and posts. Export structured JSON for influencer research, brand monitoring, and content strategy.",
+  "version": "1.0",
+  "dockerfile": "Dockerfile",
+  "input": "../INPUT_SCHEMA.json",
+  "pricingInfo": {
+    "pricingModel": "PAY_PER_EVENT",
+    "pricingPerEvent": {
+      "actorChargeEvents": {
+        "profile-scraped": {
+          "eventTitle": "Profile scraped",
+          "eventDescription": "Charged once for each public Instagram profile successfully scraped.",
+          "eventPriceUsd": 0.002,
+          "isPrimaryEvent": true,
+          "isOneTimeEvent": false
+        }
+      }
+    }
+  },
+  "categories": ["SOCIAL_MEDIA", "MARKETING", "LEAD_GENERATION"],
+  "minMemoryMbytes": 2048,
+  "maxMemoryMbytes": 8192,
+  "defaultRunOptions": {
+    "memoryMbytes": 4096,
+    "timeoutSecs": 43200
+  }
+}

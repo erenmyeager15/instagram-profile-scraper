@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.apify/
+storage/
+.apify_storage/
+*.log
+.env
+.env.*
+!.env.example
