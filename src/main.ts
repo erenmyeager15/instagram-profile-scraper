@@ -3,7 +3,13 @@ import { PlaywrightCrawler } from 'crawlee';
 import { cleanInstagramUrl, handleProfilePage } from './routes.js';
 import type { ActorInput } from './types.js';
 
+const MAINTENANCE_MESSAGE = 'Under maintenance. This Actor is temporarily unavailable and no data was collected.';
+
 Actor.main(async () => {
+    await Actor.setStatusMessage(MAINTENANCE_MESSAGE);
+    log.warning(MAINTENANCE_MESSAGE);
+    return;
+
     const input = (await Actor.getInput()) as ActorInput;
     const {
         usernames,

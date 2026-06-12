@@ -1,8 +1,8 @@
 {
   "actorSpecification": 1,
   "name": "instagram-profile-scraper",
-  "title": "Instagram Profile Scraper - Bio, Followers & Stats",
-  "description": "Scrape public Instagram profiles: full name, bio, follower and following counts, post count, verification, business category, and external link. Fast and reliable. Optional best-effort post scraping (beta).",
+  "title": "Instagram Profile Scraper - Under Maintenance",
+  "description": "Temporarily under maintenance. Runs exit without scraping, saving records, or charging profile-scraped events.",
   "version": "1.0",
   "dockerfile": "Dockerfile",
   "input": "../INPUT_SCHEMA.json",
