@@ -1,6 +1,6 @@
 {
   "title": "Instagram Profile Scraper - Bio, Followers & Stats",
-  "description": "Scrape public Instagram profiles: bio, follower/following counts, post count, verification, and business info. Fast and reliable for influencer research, brand monitoring, and lead generation. Optional best-effort post scraping (beta).",
+  "description": "Scrape public Instagram profiles: bio, follower/following counts, post count, verification, and business info. Fast and reliable for influencer research, brand monitoring, and market research. Optional best-effort post scraping (beta).",
   "type": "object",
   "schemaVersion": 1,
   "required": ["usernames"],

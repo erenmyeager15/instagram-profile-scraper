@@ -20,7 +20,7 @@
       }
     }
   },
-  "categories": ["SOCIAL_MEDIA", "MARKETING", "LEAD_GENERATION"],
+  "categories": ["SOCIAL_MEDIA", "MARKETING"],
   "minMemoryMbytes": 2048,
   "maxMemoryMbytes": 8192,
   "defaultRunOptions": {
