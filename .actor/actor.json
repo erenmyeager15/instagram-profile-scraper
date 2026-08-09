@@ -27,6 +27,7 @@
     "memoryMbytes": 256,
     "timeoutSecs": 900
   },
+  "output": "./output_schema.json",
   "storages": {
     "dataset": "./dataset_schema.json"
   }

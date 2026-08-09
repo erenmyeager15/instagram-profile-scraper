@@ -1,0 +1,14 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "Instagram Profile Scraper Output",
+  "description": "Structured public Instagram profile statistics for creator research and brand monitoring.",
+  "type": "object",
+  "properties": {
+    "results": {
+      "type": "string",
+      "title": "Instagram profile records",
+      "description": "Clean dataset items containing public Instagram profile identifiers, biography, follower statistics, verification state, category, profile image, source URL, and scrape metadata.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
+  }
+}
