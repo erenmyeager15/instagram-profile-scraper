@@ -1,8 +1,8 @@
 {
   "actorSpecification": 1,
   "name": "instagram-profile-scraper",
-  "title": "Instagram Profile Scraper - Under Maintenance",
-  "description": "Temporarily under maintenance. Runs exit without scraping, saving records, or charging profile-scraped events.",
+  "title": "Instagram Profile Scraper - Public Profile Analytics",
+  "description": "Extract public Instagram profile statistics for creator research and brand monitoring. Uses bounded HTTP sessions with proxy rotation and charges only successfully saved profiles.",
   "version": "1.0",
   "dockerfile": "Dockerfile",
   "input": "../INPUT_SCHEMA.json",
@@ -21,11 +21,11 @@
     }
   },
   "categories": ["SOCIAL_MEDIA", "MARKETING"],
-  "minMemoryMbytes": 2048,
-  "maxMemoryMbytes": 8192,
+  "minMemoryMbytes": 256,
+  "maxMemoryMbytes": 2048,
   "defaultRunOptions": {
-    "memoryMbytes": 4096,
-    "timeoutSecs": 43200
+    "memoryMbytes": 256,
+    "timeoutSecs": 900
   },
   "storages": {
     "dataset": "./dataset_schema.json"

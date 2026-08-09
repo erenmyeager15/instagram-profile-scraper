@@ -1,6 +1,6 @@
 {
   "title": "Instagram Profile Scraper - Bio, Followers & Stats",
-  "description": "Scrape public Instagram profiles: bio, follower/following counts, post count, verification, and business info. Fast and reliable for influencer research, brand monitoring, and market research. Optional best-effort post scraping (beta).",
+  "description": "Collect public Instagram profile metadata and statistics with bounded HTTP sessions and proxy rotation.",
   "type": "object",
   "schemaVersion": 1,
   "required": ["usernames"],
@@ -13,32 +13,9 @@
       "default": ["natgeo"],
       "prefill": ["natgeo"]
     },
-    "maxPostsPerProfile": {
-      "title": "Max Posts Per Profile (beta)",
-      "description": "Number of recent posts to scrape per profile. Profile data is always scraped reliably; post scraping is best-effort and may be limited by Instagram's logged-out restrictions. Leave at 0 for fast, reliable profile-only scraping.",
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 500,
-      "default": 0,
-      "editor": "number"
-    },
-    "includeReels": {
-      "title": "Include Reels",
-      "description": "Whether to include Instagram Reels in the scraped posts.",
-      "type": "boolean",
-      "default": true,
-      "editor": "checkbox"
-    },
-    "includeCarousels": {
-      "title": "Include Carousels",
-      "description": "Whether to include carousel (multi-image/video) posts in the scraped posts.",
-      "type": "boolean",
-      "default": true,
-      "editor": "checkbox"
-    },
     "proxyConfiguration": {
       "title": "Proxy Configuration",
-      "description": "Configure proxies for scraping. Residential proxies recommended for Instagram.",
+      "description": "Residential proxy is the reliable default because Instagram commonly limits datacenter traffic. A failed lookup is retried once with a fresh HTTP session.",
       "type": "object",
       "editor": "proxy",
       "default": {

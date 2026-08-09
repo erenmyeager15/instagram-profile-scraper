@@ -1,8 +1,5 @@
 {
   "usernames": ["natgeo"],
-  "maxPostsPerProfile": 5,
-  "includeReels": true,
-  "includeCarousels": true,
   "proxyConfiguration": {
     "useApifyProxy": true,
     "apifyProxyGroups": ["RESIDENTIAL"],

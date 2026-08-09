@@ -1,13 +1,15 @@
 export interface ActorInput {
     usernames: string[];
-    maxPostsPerProfile: number;
-    includeReels: boolean;
-    includeCarousels: boolean;
-    proxyConfiguration: {
+    proxyConfiguration?: {
         useApifyProxy: boolean;
         apifyProxyGroups: string[];
         proxyUrls: string[];
     };
+}
+
+export interface InstagramResult {
+    profile: ProfileRecord;
+    posts: PostRecord[];
 }
 
 export interface ProfileRecord {
@@ -16,7 +18,7 @@ export interface ProfileRecord {
     bio: string;
     followers: number;
     following: number;
-    postsCount: number;
+    postsCount: number | null;
     profileImageUrl: string;
     isVerified: boolean;
     isBusinessAccount: boolean;

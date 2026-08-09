@@ -8,7 +8,7 @@
       "bio": { "type": "string", "title": "Bio", "example": "Inspiring people to care about the planet." },
       "followers": { "type": "integer", "title": "Followers", "example": 269000000 },
       "following": { "type": "integer", "title": "Following", "example": 134 },
-      "postsCount": { "type": "integer", "title": "Posts", "example": 30215 },
+      "postsCount": { "type": ["integer", "null"], "title": "Posts", "example": 30215 },
       "isVerified": { "type": "boolean", "title": "Verified", "example": true },
       "isBusinessAccount": { "type": "boolean", "title": "Business", "example": true },
       "businessCategory": { "type": "string", "title": "Category", "example": "Media/News Company" },
