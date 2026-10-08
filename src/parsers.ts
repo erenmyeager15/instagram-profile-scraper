@@ -18,7 +18,9 @@ export function parseCount(value: string): number | null {
 }
 
 function findUser(value: unknown, requested: string, depth = 0, budget = { remaining: 10_000 }): JsonRecord | null {
-    if (!value || typeof value !== 'object' || depth > 12 || --budget.remaining < 0) return null;
+    // Current public Relay payloads place the user 16+ levels below ScheduledServerJS wrappers.
+    // Bound both depth and visited nodes while allowing those legitimate nested responses.
+    if (!value || typeof value !== 'object' || depth > 32 || --budget.remaining < 0) return null;
     const record = value as JsonRecord;
     if (text(record.username).toLowerCase() === requested.toLowerCase()
         && ('edge_followed_by' in record || 'follower_count' in record || 'is_private' in record)) return record;
@@ -67,7 +69,7 @@ function mapPosts(user: JsonRecord, username: string, observedAt: string): PostR
             viewsCount: count(node.video_view_count ?? node.play_count),
             // Optional bad dates must not discard a valid profile.
             postedDate: Number.isFinite(date) && date > 0 && date <= Date.parse(observedAt) ? new Date(date).toISOString() : '',
-            thumbnailUrl: text(node.display_url ?? node.thumbnail_src ?? node.image_versions2?.candidates?.[0]?.url),
+            thumbnailUrl: text(node.display_url ?? node.display_uri ?? node.thumbnail_src ?? node.image_versions2?.candidates?.[0]?.url),
             locationTag: text(node?.location?.name), isSponsored: boolean(node.is_paid_partnership),
             productTagsFlag: node.product_tags?.length > 0 ? true : Array.isArray(node.product_tags) ? false : null,
             username, scrapedAt: observedAt,
@@ -147,13 +149,42 @@ function decodeHtml(value: string): string {
 
 export function parseInstagramHtml(html: string, requestedUsername: string): InstagramResult | null {
     let structured: InstagramResult | null = null;
+    const timelines: JsonRecord[] = [];
+    const timelineBudget = { remaining: 20_000 };
+    const discoverTimelines = (value: unknown, depth = 0): void => {
+        if (!value || typeof value !== 'object' || depth > 32 || --timelineBudget.remaining < 0) return;
+        const record = value as JsonRecord;
+        if (Array.isArray(record.polaris_ordered_timeline_connection?.edges) && timelines.length < 20) timelines.push(record);
+        for (const child of Object.values(record)) {
+            if (timelineBudget.remaining <= 0) break;
+            discoverTimelines(child, depth + 1);
+        }
+    };
     let blocks = 0;
     for (const script of html.matchAll(/<script[^>]*type=["']application\/json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
         if (++blocks > 100) break;
         try {
-            const result = parseInstagramPayload(JSON.parse(script[1]), requestedUsername);
+            const payload = JSON.parse(script[1]);
+            const result = parseInstagramPayload(payload, requestedUsername);
             if (result) structured = mergeInstagramResults(result, structured);
+            discoverTimelines(payload);
         } catch { /* Try the next public JSON block. */ }
+    }
+    // Relay sends the public profile and timeline in separate scripts, in either order.
+    // Require both the parent identity and each post owner to match; never infer privacy.
+    if (structured?.profile.isPrivate === false && structured.profile.profileId && !structured.posts.length) {
+        const identity = structured.profile.profileId;
+        const id = (value: unknown): string => text(value) || (typeof value === 'number' && Number.isSafeInteger(value) ? String(value) : '');
+        for (const timeline of timelines) {
+            if (id(timeline.id ?? timeline.pk) !== identity) continue;
+            const edges = timeline.polaris_ordered_timeline_connection.edges.slice(0, 24).filter((edge: JsonRecord) => {
+                const owner = edge?.node?.user;
+                return owner && id(owner.id ?? owner.pk) === identity
+                    && text(owner.username).toLowerCase() === requestedUsername.toLowerCase();
+            });
+            structured.posts = mapPosts({ edge_owner_to_timeline_media: { edges } }, structured.profile.username, structured.profile.scrapedAt);
+            if (structured.posts.length) break;
+        }
     }
     const meta: Record<string, string> = {};
     for (const tag of html.matchAll(/<meta\b[^>]*>/gi)) {
