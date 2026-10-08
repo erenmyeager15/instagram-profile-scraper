@@ -30,6 +30,14 @@ export async function runProfiles(input: ValidatedInput, dep: Dependencies): Pro
         invalidInputs: input.invalidInputs, duplicatesRemoved: input.duplicatesRemoved, historyCommitted: false, lookups: [], changes: [] };
     let fatal: unknown;
     let consecutiveBlocks = 0;
+    let lastReported: string | undefined;
+    const reportIfChanged = async (): Promise<void> => {
+        const snapshot = JSON.stringify(summary);
+        if (snapshot === lastReported) return;
+        await dep.report(summary);
+        // Only suppress a write after its previous attempt succeeded.
+        lastReported = snapshot;
+    };
     try {
         for (const [index, username] of input.usernames.entries()) {
             const stop = dep.stopped() ? 'TIME_LIMIT' : summary.status === 'BUDGET_LIMIT' || !dep.canSave() ? 'BUDGET_LIMIT' : null;
@@ -77,7 +85,7 @@ export async function runProfiles(input: ValidatedInput, dep: Dependencies): Pro
             throw new Error('No confirmed public profiles were saved. See OUTPUT for blocked, private, unavailable or incomplete lookups.');
         }
         // Save the report before advancing the baseline; a failed export cannot silently consume a change.
-        await dep.report(summary);
+        await reportIfChanged();
         if (dep.monitor && summary.saved) {
             summary.historyCommitted = 'unknown';
             await dep.monitor.commit();
@@ -88,7 +96,7 @@ export async function runProfiles(input: ValidatedInput, dep: Dependencies): Pro
         summary.status = 'FAILED';
     } finally {
         try { await dep.monitor?.release(); } catch (error) { fatal ??= error; summary.status = 'FAILED'; }
-        try { await dep.report(summary); } catch (error) { fatal ??= error; }
+        try { await reportIfChanged(); } catch (error) { fatal ??= error; }
     }
     if (fatal) throw fatal;
     return summary;

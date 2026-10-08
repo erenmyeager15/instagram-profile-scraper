@@ -372,6 +372,40 @@ test('runner saves/charges one profile, exports report then commits history', as
     assert.ok(f.events.indexOf('save') < f.events.indexOf('report')); assert.ok(f.events.indexOf('report') < f.events.indexOf('commit'));
     assert.equal(f.events.filter(e => e === 'release').length, 1);
 });
+
+test('non-monitor run writes its unchanged report only once', async () => {
+    const f = fixture({ monitor: undefined });
+    const summary = await runProfiles(validateInput({ usernames: ['demo'] }), f.deps);
+    assert.equal(summary.status, 'COMPLETE'); assert.equal(f.reports.length, 1);
+    assert.equal(summary.historyCommitted, false);
+});
+
+test('watchlist still writes before and after committing history', async () => {
+    const f = fixture();
+    await runProfiles(validateInput({ usernames: ['demo'] }), f.deps);
+    assert.equal(f.reports.length, 2);
+    assert.equal(f.reports[0].historyCommitted, false);
+    assert.equal(f.reports[1].historyCommitted, true);
+});
+
+test('release failure rewrites a previously successful report as failed', async () => {
+    const f = fixture(); f.monitor.release = async () => { throw new Error('Release failed'); };
+    await assert.rejects(runProfiles(validateInput({ usernames: ['demo'] }), f.deps), /Release failed/);
+    assert.equal(f.reports.at(-1)?.status, 'FAILED');
+    assert.equal(f.reports.at(-1)?.historyCommitted, true);
+});
+
+test('failed initial report is retried with failed status and cannot commit history', async () => {
+    const reports: RunSummary[] = [];
+    let attempts = 0;
+    const f = fixture({ report: async summary => {
+        attempts++; if (attempts === 1) throw new Error('Temporary report failure');
+        reports.push(structuredClone(summary));
+    } });
+    await assert.rejects(runProfiles(validateInput({ usernames: ['demo'] }), f.deps), /Temporary report failure/);
+    assert.equal(attempts, 2); assert.equal(reports[0].status, 'FAILED');
+    assert.ok(!f.events.includes('commit'));
+});
 test('exhausted budget causes zero source requests and no history commit', async () => {
     const f = fixture({ canSave: () => false }); const summary = await runProfiles(validateInput({ usernames: ['demo'] }), f.deps);
     assert.equal(summary.status, 'BUDGET_LIMIT'); assert.equal(summary.requests, 0); assert.equal(f.rows.length, 0); assert.ok(!f.events.includes('commit'));
