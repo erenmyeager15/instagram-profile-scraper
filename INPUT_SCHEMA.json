@@ -1,21 +1,58 @@
 {
-  "title": "Instagram Profile Scraper - Bio, Followers & Stats",
-  "description": "Collect public Instagram profile metadata and statistics with bounded HTTP sessions and proxy rotation.",
+  "title": "Instagram Profile Scraper - Public Profile Analytics",
+  "description": "Public profile statistics, published bio links, optional recent-post summaries and comparable watchlist changes. Bounded HTTP only; no login or private profiles.",
   "type": "object",
   "schemaVersion": 1,
   "required": ["usernames"],
   "properties": {
     "usernames": {
       "title": "Instagram Usernames or Profile URLs",
-      "description": "Enter Instagram usernames (without @) or full profile URLs. Multiple entries supported.",
+      "description": "Enter up to 50 unique public-profile usernames, @handles or profile URLs. Posts/Reels URLs are not profile inputs. Invalid entries are counted in OUTPUT; duplicates are collapsed before requests.",
       "type": "array",
       "editor": "stringList",
       "default": ["natgeo"],
       "prefill": ["natgeo"]
     },
+    "includeRecentPosts": {
+      "title": "Include Available Recent Posts and Activity",
+      "description": "Include up to maxRecentPosts from the existing public profile response, with sample engagement, post mix and latest-post date. No scrolling, pagination or media downloads. Missing/hidden stats stay null; an empty sample does not mean inactive.",
+      "type": "boolean",
+      "default": false
+    },
+    "maxRecentPosts": {
+      "title": "Maximum Recent-Post Sample",
+      "description": "Cap the available recent-post sample, not a guarantee of how many Instagram exposes.",
+      "type": "integer",
+      "default": 6,
+      "minimum": 1,
+      "maximum": 12
+    },
+    "monitorStoreName": {
+      "title": "Watchlist History Name (Optional)",
+      "description": "Reuse a name (letters, numbers, _ or -) to compare successful public-profile observations in your own account's storage. Blank disables history. Up to 500 profiles / 10 observations each / 2 MB / 30-day comparison window; oldest observations are evicted at size bounds. Do not overlap runs sharing a name. Failed/private/unobserved targets do not become follower-loss events.",
+      "type": "string",
+      "editor": "textfield",
+      "default": ""
+    },
+    "followerChangeThresholdPercent": {
+      "title": "Follower Change Flag Threshold (%)",
+      "description": "Flag an absolute percentage change only when both follower counts are exact and comparable. Flags do not send notifications. Zero baselines, missing/rounded counts and identity changes cannot produce percentage alerts.",
+      "type": "number",
+      "default": 5,
+      "minimum": 0,
+      "maximum": 100
+    },
+    "maxRunSeconds": {
+      "title": "Soft Source-Request Runtime Limit (Seconds)",
+      "description": "Stop source requests and preserve saved results at this limit. Default 240 seconds; reporting/storage cleanup may take additional time. Large or blocked batches can be partial.",
+      "type": "integer",
+      "default": 240,
+      "minimum": 30,
+      "maximum": 840
+    },
     "proxyConfiguration": {
       "title": "Proxy Configuration",
-      "description": "Residential proxy is the reliable default because Instagram commonly limits datacenter traffic. A failed lookup is retried once with a fresh HTTP session.",
+      "description": "Residential is the default when omitted. Explicit no-proxy/custom settings remain supported but may be blocked. At most two fresh sessions and four HTTP requests per target; complete public HTML avoids the optional second metadata request.",
       "type": "object",
       "editor": "proxy",
       "default": {

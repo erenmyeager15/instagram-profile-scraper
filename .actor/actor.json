@@ -2,7 +2,7 @@
   "actorSpecification": 1,
   "name": "instagram-profile-scraper",
   "title": "Instagram Profile Scraper - Public Profile Analytics",
-  "description": "Extract public Instagram profile statistics for creator research and brand monitoring. Uses bounded HTTP sessions with proxy rotation and charges only successfully saved profiles.",
+  "description": "Public Instagram profile analytics: followers, published bio links, optional recent-post summaries and precision-aware watchlist changes. HTTP-only at 256 MB; no login, media downloads or private profiles. Pay per saved public profile.",
   "version": "1.0",
   "dockerfile": "Dockerfile",
   "input": "../INPUT_SCHEMA.json",
@@ -10,6 +10,12 @@
     "pricingModel": "PAY_PER_EVENT",
     "pricingPerEvent": {
       "actorChargeEvents": {
+        "apify-actor-start": {
+          "eventTitle": "Actor Start",
+          "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
+          "eventPriceUsd": 0.00005,
+          "isOneTimeEvent": true
+        },
         "profile-scraped": {
           "eventTitle": "Profile scraped",
           "eventDescription": "Charged once for each public Instagram profile successfully scraped.",

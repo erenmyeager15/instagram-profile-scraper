@@ -6,16 +6,26 @@
       "username": { "type": "string", "title": "Username", "example": "natgeo" },
       "fullName": { "type": "string", "title": "Full Name", "example": "National Geographic" },
       "bio": { "type": "string", "title": "Bio", "example": "Inspiring people to care about the planet." },
-      "followers": { "type": "integer", "title": "Followers", "example": 269000000 },
-      "following": { "type": "integer", "title": "Following", "example": 134 },
+      "followers": { "type": ["integer", "null"], "title": "Followers", "example": 269000000 },
+      "following": { "type": ["integer", "null"], "title": "Following", "example": 134 },
       "postsCount": { "type": ["integer", "null"], "title": "Posts", "example": 30215 },
-      "isVerified": { "type": "boolean", "title": "Verified", "example": true },
-      "isBusinessAccount": { "type": "boolean", "title": "Business", "example": true },
+      "isVerified": { "type": ["boolean", "null"], "title": "Verified", "example": true },
+      "isBusinessAccount": { "type": ["boolean", "null"], "title": "Business", "example": true },
       "businessCategory": { "type": "string", "title": "Category", "example": "Media/News Company" },
       "externalLink": { "type": "string", "title": "External Link", "example": "https://l.instagram.com/..." },
       "profileImageUrl": { "type": "string", "title": "Profile Image", "example": "https://..." },
       "profileUrl": { "type": "string", "title": "Profile URL", "example": "https://www.instagram.com/natgeo/" },
-      "isPrivate": { "type": "boolean", "title": "Private", "example": false },
+      "isPrivate": { "type": ["boolean", "null"], "title": "Private", "example": false },
+      "profileId": { "type": ["string", "null"], "title": "Published Profile ID" },
+      "externalLinks": { "type": "array", "title": "Published Bio Links", "items": { "type": "string" } },
+      "externalDomains": { "type": "array", "title": "Published Link Domains", "items": { "type": "string" } },
+      "dataSource": { "type": "string", "title": "Data Source" },
+      "metricPrecision": { "type": "object", "title": "Metric Precision" },
+      "fieldAvailability": { "type": "object", "title": "Field Availability" },
+      "qualityFlags": { "type": "array", "title": "Quality Flags", "items": { "type": "string" } },
+      "activity": { "type": "object", "title": "Recent-Post Sample Analytics" },
+      "recentPosts": { "type": "array", "title": "Available Recent Posts", "items": { "type": "object" } },
+      "changes": { "type": "object", "title": "Comparable Watchlist Changes" },
       "scrapedAt": { "type": "string", "title": "Scraped At", "example": "2026-06-10T12:00:00.000Z" }
     }
   },
@@ -35,6 +45,8 @@
           "businessCategory",
           "externalLink",
           "bio",
+          "externalDomains",
+          "qualityFlags",
           "profileUrl",
           "scrapedAt"
         ]
@@ -52,8 +64,62 @@
           "businessCategory": { "label": "Category", "format": "text" },
           "externalLink": { "label": "Link", "format": "link" },
           "bio": { "label": "Bio", "format": "text" },
+          "externalDomains": { "label": "Bio Link Domains", "format": "array" },
+          "qualityFlags": { "label": "Data Quality", "format": "array" },
           "profileUrl": { "label": "Profile", "format": "link" },
           "scrapedAt": { "label": "Scraped At", "format": "date" }
+        }
+      }
+    },
+    "watchlist": {
+      "title": "Comparable Watchlist Changes",
+      "description": "Flat change fields for review and CSV exports. Enable monitorStoreName; missing optional comparisons stay empty rather than becoming false alerts.",
+      "transformation": {
+        "flatten": ["changes", "metricPrecision"],
+        "fields": ["username", "followers", "metricPrecision.followers", "changes.status", "changes.followerChange", "changes.followerChangePercent", "changes.followerThresholdExceeded", "changes.bioChanged", "changes.linksChanged", "changes.elapsedHours", "changes.reasons", "profileUrl", "scrapedAt"]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "username": { "label": "Username", "format": "text" },
+          "followers": { "label": "Followers", "format": "number" },
+          "metricPrecision.followers": { "label": "Follower Precision", "format": "text" },
+          "changes.status": { "label": "Comparison Status", "format": "text" },
+          "changes.followerChange": { "label": "Follower Change", "format": "number" },
+          "changes.followerChangePercent": { "label": "Follower Change (%)", "format": "number" },
+          "changes.followerThresholdExceeded": { "label": "Threshold Flag", "format": "boolean" },
+          "changes.bioChanged": { "label": "Bio Changed", "format": "boolean" },
+          "changes.linksChanged": { "label": "Links Changed", "format": "boolean" },
+          "changes.elapsedHours": { "label": "Hours Between Checks", "format": "number" },
+          "changes.reasons": { "label": "Comparison Limitations", "format": "array" },
+          "profileUrl": { "label": "Profile", "format": "link" },
+          "scrapedAt": { "label": "Observed At", "format": "date" }
+        }
+      }
+    },
+    "activity": {
+      "title": "Recent-Post Sample Analytics",
+      "description": "Flat sample analytics for review and CSV exports. Enable includeRecentPosts; these are not full-history or audience-quality metrics.",
+      "transformation": {
+        "flatten": ["activity"],
+        "fields": ["username", "activity.sampleStatus", "activity.sampledPosts", "activity.engagementPosts", "activity.averageLikes", "activity.averageComments", "activity.medianInteractions", "activity.engagementRatePercent", "activity.latestPostAt", "activity.daysSinceLatestPost", "activity.samplePostsPerWeek", "profileUrl", "scrapedAt"]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "username": { "label": "Username", "format": "text" },
+          "activity.sampleStatus": { "label": "Sample Coverage", "format": "text" },
+          "activity.sampledPosts": { "label": "Sampled Posts", "format": "number" },
+          "activity.engagementPosts": { "label": "Posts With Known Stats", "format": "number" },
+          "activity.averageLikes": { "label": "Mean Likes", "format": "number" },
+          "activity.averageComments": { "label": "Mean Comments", "format": "number" },
+          "activity.medianInteractions": { "label": "Median Interactions", "format": "number" },
+          "activity.engagementRatePercent": { "label": "Sample Engagement (%)", "format": "number" },
+          "activity.latestPostAt": { "label": "Latest Sample Post", "format": "date" },
+          "activity.daysSinceLatestPost": { "label": "Days Since Sample Post", "format": "number" },
+          "activity.samplePostsPerWeek": { "label": "Sample Interval Posts/Week", "format": "number" },
+          "profileUrl": { "label": "Profile", "format": "link" },
+          "scrapedAt": { "label": "Observed At", "format": "date" }
         }
       }
     }

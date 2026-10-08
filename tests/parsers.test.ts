@@ -9,7 +9,7 @@ test('parseCount handles compact public metrics', () => {
 
 test('parseInstagramPayload maps profile and recent posts', () => {
     const result = parseInstagramPayload({ data: { user: {
-        username: 'natgeo', full_name: 'National Geographic', biography: 'Planet stories',
+        username: 'natgeo', full_name: 'National Geographic', biography: 'Planet stories', is_private: false,
         edge_followed_by: { count: 100 }, edge_follow: { count: 2 }, is_verified: true,
         edge_owner_to_timeline_media: { count: 1, edges: [{ node: {
             id: '1', shortcode: 'ABC', __typename: 'GraphImage', display_url: 'https://image.example/1.jpg',

@@ -4,6 +4,12 @@
   "description": "Structured public Instagram profile statistics for creator research and brand monitoring.",
   "type": "object",
   "properties": {
+    "runReport": {
+      "type": "string",
+      "title": "Lookup Coverage and Changed Profiles",
+      "description": "OUTPUT contains lookup status per handle, safe source-stage traces, saved/request counts, comparable changes and history commit status. SOURCE_BLOCKED means skipped after two consecutive source blocks, not an attempted lookup. Failed/private/skipped handles are not charged result rows.",
+      "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/OUTPUT"
+    },
     "results": {
       "type": "string",
       "title": "Instagram profile records",

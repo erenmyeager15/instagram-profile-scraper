@@ -8,3 +8,5 @@ storage/
 .env.*
 !.env.example
 .tmp-*.json
+# Local owner-run/billing analysis, not public Actor source.
+/REVIEW-2026-10-08.md

@@ -13,12 +13,18 @@
   },
   "dependencies": {
     "apify": "^3.7.2",
-    "got-scraping": "^4.2.1"
+    "got-scraping": "^4.2.1",
+    "tough-cookie": "6.0.1"
   },
   "devDependencies": {
     "@apify/tsconfig": "^0.1.0",
     "tsx": "^4.16.0",
     "typescript": "^5.5.0"
+  },
+  "overrides": {
+    "get-uri": {
+      "basic-ftp": "6.2.1"
+    }
   },
   "apify": {
     "actorInterface": "apify/actor-node:20"
