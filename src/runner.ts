@@ -67,7 +67,9 @@ export async function runProfiles(input: ValidatedInput, dep: Dependencies): Pro
                 if (dep.monitor && !profile.changes?.reasons.includes('NON_FORWARD_OBSERVATION')) appendSnapshot(dep.monitor.state, profile);
                 if (profile.changes?.status === 'CHANGED') summary.changes.push({ username, profileUrl: profile.profileUrl, observedAt: profile.scrapedAt, changes: profile.changes });
             } else diagnostic.status = 'BUDGET_LIMIT';
-            if (saved.exhausted) summary.status = 'BUDGET_LIMIT';
+            // Exhausting the allowance after saving every requested profile is completion,
+            // not a truncated run. Still stop if any requested work remains unsaved.
+            if (saved.exhausted && summary.saved < summary.requested) summary.status = 'BUDGET_LIMIT';
         }
         if (summary.status === 'COMPLETE' && summary.saved < summary.requested) summary.status = 'PARTIAL';
         if (!summary.saved && !['BUDGET_LIMIT', 'TIME_LIMIT'].includes(summary.status)) {

@@ -381,6 +381,20 @@ test('save trimmed by budget does not advance history', async () => {
     const summary = await runProfiles(validateInput({ usernames: ['demo'] }), f.deps);
     assert.equal(summary.saved, 0); assert.equal(summary.status, 'BUDGET_LIMIT'); assert.equal(Object.keys(f.monitor.state.profiles).length, 0);
 });
+
+test('charge limit reached on the final saved profile reports complete', async () => {
+    const f = fixture({ save: async () => ({ saved: true, exhausted: true }) });
+    const summary = await runProfiles(validateInput({ usernames: ['demo'] }), f.deps);
+    assert.equal(summary.saved, 1); assert.equal(summary.status, 'COMPLETE');
+    assert.equal(summary.lookups[0].status, 'OK'); assert.equal(summary.historyCommitted, true);
+});
+
+test('charge limit reached before the last profile stops further requests', async () => {
+    const f = fixture({ save: async () => ({ saved: true, exhausted: true }) });
+    const summary = await runProfiles(validateInput({ usernames: ['demo', 'other'] }), f.deps);
+    assert.equal(summary.saved, 1); assert.equal(summary.status, 'BUDGET_LIMIT');
+    assert.equal(summary.requests, 1); assert.equal(summary.lookups[1].status, 'BUDGET_LIMIT');
+});
 test('storage failure is fatal and never advances history', async () => {
     const f = fixture({ save: async () => { throw new Error('Storage unavailable'); } });
     await assert.rejects(runProfiles(validateInput({ usernames: ['demo'] }), f.deps), /Storage unavailable/);
