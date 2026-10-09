@@ -133,6 +133,13 @@ export async function collectProfile(username: string, request: Requester, newPr
         if (htmlResult?.profile.isPrivate === true) return finish('PRIVATE');
         // Do not spend another proxy request when the page already has complete structured metadata.
         if (enough(htmlResult, wantsPosts)) return finish('OK', htmlResult);
+        // A page with no structured profile (or only rounded Open Graph counts) cannot prove whether
+        // the account is public. The optional metadata endpoint commonly answers 401 for the same
+        // weak session, so rotate once instead of spending a second request that cannot be billed.
+        if (!htmlResult || htmlResult.profile.isPrivate === null) {
+            lastStatus = resultStatus(htmlResult);
+            continue;
+        }
         if (stopped()) return finish('TIME_LIMIT');
         if (requests >= MAX_PROFILE_REQUESTS) return finish(resultStatus(htmlResult), resultStatus(htmlResult) === 'OK' ? htmlResult : null);
         let apiResult: InstagramResult | null = null;

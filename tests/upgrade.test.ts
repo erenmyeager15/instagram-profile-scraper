@@ -155,8 +155,10 @@ test('network failures retry the page only, not the optional metadata endpoint',
 });
 test('metadata-only cannot prove privacy and is not billed', async () => {
     const meta = '<meta property="og:title" content="Demo (@demo)"><meta property="og:description" content="100 Followers, 2 Following, 1 Posts">';
-    const lookup = await collectProfile('demo', requester([response(meta), response('{}'), response(meta), response('{}')]), noProxy, running);
-    assert.equal(lookup.status, 'PRIVACY_UNKNOWN'); assert.equal(lookup.result, null);
+    const calls: string[] = [];
+    const lookup = await collectProfile('demo', requester([response(meta), response(meta)], calls), noProxy, running);
+    assert.equal(lookup.status, 'PRIVACY_UNKNOWN'); assert.equal(lookup.result, null); assert.equal(lookup.requests, 2);
+    assert.ok(calls.every(url => url === 'https://www.instagram.com/demo/'));
 });
 test('deadline stops lookup before source requests', async () => {
     const lookup = await collectProfile('demo', requester([]), noProxy, () => true);
@@ -182,11 +184,21 @@ test('request errors are classified without raw credential-bearing messages', as
     const network = await collectProfile('demo', requester([new Error('Network http://user:password@proxy.example'), response('', 429)]), noProxy, running);
     assert.equal(network.traces[0].error, 'NETWORK_ERROR'); assert.ok(!JSON.stringify(network.traces).includes('password'));
 });
-test('HTML and metadata share one browser session; retry replaces the session', async () => {
+test('incomplete pages rotate once without spending a blocked metadata request', async () => {
     const sessions: object[] = [];
     const lookup = await collectProfile('demo', async options => { sessions.push(options.sessionToken!); return response('{}'); }, noProxy, running);
-    assert.equal(lookup.requests, 4); assert.ok(sessions[0]);
-    assert.equal(sessions[0], sessions[1]); assert.equal(sessions[2], sessions[3]); assert.notEqual(sessions[0], sessions[2]);
+    assert.equal(lookup.requests, 2); assert.equal(lookup.status, 'NO_DATA'); assert.ok(sessions[0]);
+    assert.notEqual(sessions[0], sessions[1]);
+});
+test('fresh session recovers an incomplete public page', async () => {
+    const calls: HttpRequest[] = [];
+    const lookup = await collectProfile('demo', async options => {
+        calls.push(options);
+        return calls.length === 1 ? response('{}') : response(html());
+    }, noProxy, running);
+    assert.equal(lookup.status, 'OK'); assert.equal(lookup.requests, 2);
+    assert.deepEqual(calls.map(call => call.url), ['https://www.instagram.com/demo/', 'https://www.instagram.com/demo/']);
+    assert.notEqual(calls[0].sessionToken, calls[1].sessionToken);
 });
 test('same-profile canonical redirect reuses proxy, cookies and browser identity', async () => {
     const calls: HttpRequest[] = [];
@@ -243,9 +255,9 @@ test('canonical redirect chain is bounded to one hop without silently following 
     ]), noProxy, running);
     assert.equal(lookup.status, 'NO_DATA'); assert.equal(lookup.requests, 2);
 });
-test('canonical redirect and fresh-session fallback still share a four-request ceiling', async () => {
+test('canonical redirect and fresh-session fallback remain bounded', async () => {
     const lookup = await collectProfile('demo', requester([
-        { statusCode: 301, body: '', headers: { location: '/Demo/' } }, response('{}'), response('{}'), response(html()),
+        { statusCode: 301, body: '', headers: { location: '/Demo/' } }, response('{}'), response(html()), response('{}'),
     ]), noProxy, running, true);
     assert.equal(lookup.status, 'OK'); assert.equal(lookup.requests, MAX_PROFILE_REQUESTS);
 });
@@ -258,9 +270,11 @@ test('rate-limited optional metadata keeps usable public HTML without another se
     const lookup = await collectProfile('demo', requester([response(html(payload({ edge_follow: undefined }))), response('', 429)]), noProxy, running);
     assert.equal(lookup.status, 'OK'); assert.equal(lookup.requests, 2); assert.equal(lookup.result?.profile.followers, 100);
 });
-test('rate-limited metadata with no usable profile stops visibly without further sessions', async () => {
-    const lookup = await collectProfile('demo', requester([response('{}'), response('', 429)]), noProxy, running);
+test('no-data page rotates before trying optional metadata', async () => {
+    const calls: string[] = [];
+    const lookup = await collectProfile('demo', requester([response('{}'), response('', 429)], calls), noProxy, running);
     assert.equal(lookup.status, 'BLOCKED'); assert.equal(lookup.requests, 2); assert.equal(lookup.result, null);
+    assert.ok(calls.every(url => url === 'https://www.instagram.com/demo/'));
 });
 test('discarded response bodies are explicitly marked, not reported as full transfer bytes', async () => {
     const lookup = await collectProfile('demo', requester([{ ...response('', 429), bodyDiscarded: true }]), noProxy, running);
